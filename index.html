@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Get Coins</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 100vw;
+            max-width: 450px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            min-height: 100vh;
+        }
+        .content-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+        .top-nav {
+            display: flex;
+            align-items: center;
+            padding: 18px 15px;
+            margin-bottom: 0;
+            border-bottom: 1px solid #eee;
+            gap: 12px;
+        }
+        .top-nav img {
+            height: 48px;
+            width: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }
+        .user-meta {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .user-meta input {
+            border: none;
+            outline: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            background: transparent;
+            padding: 0;
+            margin-bottom: 2px;
+        }
+        .user-followers-count {
+            font-size: 12px;
+            color: #888;
+        }
+        .recharge-section {
+            padding: 15px;
+        }
+        .recharge-section h2 {
+            margin-top: 0;
+            font-size: 20px;
+            font-weight: 400;
+        }
+        .recharge-section p {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .recharge-section .red-text {
+            color: #fe2c55;
+        }
+        .coin-options {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .coin-option {
+            background-color: #f7f7f7;
+            border: 0.8px solid #ddd;
+            border-radius: 6px;
+            padding: 12px 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: calc(33.33% - 6px);
+            box-sizing: border-box;
+            height: 60px;
+            justify-content: center;
+        }
+        .coin-option:hover, .coin-option.selected {
+            background-color: #ffffff;
+            border-color: #FFC107;
+            box-shadow: 0 0 5px rgba(255, 193, 7, 0.6);
+        }
+        .coin-option p {
+            margin: 5px 0 0;
+            font-size: 12px;
+            color: #9c9898;
+        }
+        .coin-option span {
+            display: block;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .coin-option.custom-btn {
+            font-weight: 500;
+            font-size: 14px;
+            background-color: #f7f7f7;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .top-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .coin-option img {
+            height: 24px;
+        }
+        .card {
+            display: flex;
+            align-items: center;
+            background-color: #f7f7f7;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .card img {
+            height: 30px;
+            margin-right: 15px;
+        }
+        .card h4 {
+            margin: 0;
+            font-size: 16px;
+        }
+        .card p {
+            margin: 0;
+            font-size: 12px;
+            color: #666;
+        }
+        .tiktok-brand {
+            text-align: center;
+            font-size: 12px;
+            color: #ccc;
+            margin-top: 20px;
+        }
+        .tiktok-brand img {
+            height: 15px;
+            vertical-align: middle;
+        }
+        .payment-logos {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .payment-logos img {
+            height: 25px;
+            opacity: 0.7;
+        }
+        footer {
+            padding: 15px;
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+        .special-offer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .buy-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background-color: #fe2c55;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .overlay.show {
+            display: flex;
+        }
+        #customModal .modal-content-bottom {
+            background-color: #fff;
+            width: 100%;
+            max-width: 450px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            bottom: 0;
+            box-sizing: border-box;
+        }
+        #customModal header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+        }
+        #customModal .back-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-right: 12px;
+            color: #333;
+            padding: 5px;
+            position: absolute;
+            left: 0;
+        }
+        #customModal .back-btn img {
+            width: 24px;
+            height: 24px;
+        }
+        #customModal h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+        }
+        #customModal .help-icon {
+            position: absolute;
+            right: 0;
+            width: 22px;
+            height: 22px;
+            border: 1px solid #fe2c55;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #fe2c55;
+        }
+        .custom-input-section {
+            margin-bottom: 20px;
+        }
+        .custom-input-section span {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #666;
+            font-weight: 500;
+            text-align: left;
+        }
+        .coin-input-box {
+            display: flex;
+            align-items: center;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 8px 0;
+            background: #fff;
+            justify-content: flex-start;
+        }
+        .coin-input-box img {
+            height: 24px;
+            margin-right: 8px;
+        }
+        .coin-input-box input {
+            border: none;
+            font-size: 20px;
+            font-weight: bold;
+            width: 140px;
+            text-align: left;
+            outline: none;
+            color: #333;
+            padding: 0;
+        }
+        #usdAmountDisplay {
+            font-size: 16px;
+            font-weight: 500;
+            margin: 8px 0 20px;
+            color: #333;
+            text-align: left;
+        }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .keypad button {
+            background-color: #f8f8f8;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #333;
+            transition: background-color 0.1s;
+        }
+        .keypad button:active {
+            background-color: #e8e8e8;
+        }
+        .keypad .backspace-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .keypad .backspace-btn img {
+            width: 20px;
+            height: 20px;
+        }
+        .recharge-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background-color: #fe2c55;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        .custom-modal-offer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #666;
+            margin: 12px 0;
+            padding: 12px 0;
+            border-top: 1px solid #f0f0f0;
+        }
+        .custom-modal-offer span:last-child {
+            color: #fe2c55;
+        }
+        .custom-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 12px 0;
+            border-top: 1px solid #f0f0f0;
+            color: #333;
+        }
+        #orderModal .modal {
+            background-color: #fff;
+            width: 100%;
+            max-width: 450px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            bottom: 0;
+            box-sizing: border-box;
+            height: auto;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #orderModal header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+        }
+        #orderModal .back-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-right: 12px;
+            color: #333;
+            padding: 5px;
+            position: absolute;
+            left: 0;
+            font-size: 22px;
+        }
+        #orderModal h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+        }
+        #orderModal .help-icon {
+            position: absolute;
+            right: 0;
+            width: 22px;
+            height: 22px;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+        }
+        .secure-payment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e8f5e9;
+            color: #388e3c;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            border: 1px solid #c8e6c9;
+        }
+        .secure-payment img {
+            height: 18px;
+            margin-right: 8px;
+        }
+        .order-details {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+            align-items: center;
+        }
+        .detail-row:first-child {
+            color: #6c757d;
+        }
+        .detail-row:last-child {
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+        .summary-account-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .summary-mini-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }
+        .payment-method-section {
+            margin-bottom: 15px;
+        }
+        .payment-method-section h4 {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        .payment-option {
+            display: flex;
+            align-items: center;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: #fff;
+        }
+        .payment-option:hover {
+            background-color: #f8f9fa;
+        }
+        .payment-option.selected {
+            background-color: #f8f9fa;
+            border-color: #007bff;
+            position: relative;
+        }
+        .payment-option img {
+            height: 22px;
+            margin-right: 12px;
+        }
+        .payment-option span {
+            font-size: 14px;
+            color: #333;
+        }
+        .payment-option.selected .dot {
+            position: absolute;
+            right: 15px;
+            width: 18px;
+            height: 18px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .payment-option.selected .dot::after {
+            content: "";
+            width: 8px;
+            height: 8px;
+            background-color: white;
+            border-radius: 50%;
+        }
+        .policy-text {
+            font-size: 12px;
+            color: #6c757d;
+            text-align: center;
+            margin: 12px 0 10px;
+            line-height: 1.5;
+            padding: 0 10px;
+        }
+        .policy-text strong {
+            color: #333;
+            font-weight: 600;
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 12px 0 8px;
+            border-top: 1px solid #eee;
+            color: #333;
+        }
+        .pay-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            background-color: #fe2c55;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .pay-btn img {
+            height: 20px;
+        }
+        #successModal {
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .success-container {
+            background-color: #fff;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 12px;
+            padding: 25px 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 50px;
+            color: #28a745;
+            margin: 0 auto 15px;
+            width: 60px;
+            height: 60px;
+        }
+        .success-icon img {
+            width: 100%;
+            height: 100%;
+        }
+        .success-container h1 {
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .success-message {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            padding: 0 10px;
+        }
+        .success-message strong {
+            color: #333;
+            font-weight: 600;
+        }
+        .go-back-btn {
+            width: auto;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            background-color: #fe2c55;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 0 auto;
+        }
+        .loader-container {
+            background-color: #fff;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .tiktok-loader {
+            position: relative;
+            width: 100px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+        }
+        .tiktok-loader .dot {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+        .tiktok-loader .dot.red {
+            background: #fe2c55;
+            mix-blend-mode: multiply;
+            animation: moveRight 0.7s ease-in-out infinite;
+        }
+        .tiktok-loader .dot.cyan {
+            background: #00f2ea;
+            mix-blend-mode: multiply;
+            animation: moveLeft 0.7s ease-in-out infinite;
+        }
+        @keyframes moveLeft {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(-25px) scale(0.8); }
+            100% { transform: translateX(0); }
+        }
+        @keyframes moveRight {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(25px) scale(0.8); }
+            100% { transform: translateX(0); }
+        }
+        #processingMessage {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        #processingSubMessage {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 15px;
+        }
+        #countdownTimer {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fe2c55;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="mainPage">
+    <header class="main-header" style="display:flex; align-items:center; justify-content:center; padding:13px; border-bottom:1px solid #ddd; position:relative; background:#fff;">
+        <button id="homeBackBtn" style="position:absolute; left:10px; background:none; border:none; font-size:20px; cursor:pointer;">←</button>
+        <h1 style="margin:0; font-size:18px; font-weight:600;">Get Coins</h1>
+    </header>
+    <div class="content-wrapper">
+        <nav class="top-nav">
+            <img id="userAvatarImg" alt="TikTok" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23e4e4e7'/><text x='50%' y='65%' font-family='Roboto, sans-serif' font-weight='bold' font-size='50' fill='%2371727a' text-anchor='middle'>?</text></svg>"/>
+            
+            <div class="user-meta">
+                <input id="usernameInput" placeholder="Enter username" type="text" autocomplete="off" spellcheck="false"/>
+                <span id="userFollowersSpan" class="user-followers-count">0 followers</span>
+            </div>
+        </nav>
+        <div class="recharge-section">
+            <h2>Recharge</h2>
+            <p class="red-text">Save around 25% with a lower third-party service fee. <span>?</span></p>
+            <div class="coin-options">
+                <button class="coin-option" data-coins="30" data-price="0.31"><div class="top-row"><img alt="Coin" src="https://tikpopular.com/wp-content/coins.png"/><span style="font-weight:bold;">30</span></div><p>$0.31</p></button>
+                <button class="coin-option" data-coins="350" data-price="3.65"><div class="top-row"><img alt="Coin" src="https://tikpopular.com/wp-content/coins.png"/><span style="font-weight:bold;">350</span></div><p>$3.65</p></button>
+                <button class="coin-option" data-coins="700" data-price="7.25"><div class="top-row"><img alt="Coin" src="https://tikpopular.com/wp-content/coins.png"/><span style="font-weight:bold;">700</span></div><p>$7.25</p></button>
+                <button class="coin-option" data-coins="1400" data-price="14.49"><div class="top-row"><img alt="Coin" src="https://tikpopular.com/wp-content/coins.png"/><span style="font-weight:bold;">1400</span></div><p>$14.49</p></button>
+                <button class="coin-option" data-coins="3500" data-price="36.2"><div class="top-row"><img alt="Coin" src="https://tikpopular.com/wp-content/coins.png"/><span style="font-weight:bold;">3500</span></div><p>$36.2</p></button>
+                <button class="coin-option custom-btn" id="customBtn">Custom</button>
+            </div>
+            <div class="card invite-rewards"><img alt="Handshake" src="https://img.icons8.com/ios-filled/50/000000/handshake.png"/><div><h4>Invite &amp; Get Rewards</h4><p>Check out this new feature!</p></div></div>
+            <div class="card desktop-access"><img alt="Desktop" src="https://img.icons8.com/?size=100&amp;id=iCwcOoy8tOGw&amp;format=png&amp;color=000000"/><div><p>Add this page to the mobile desktop for easy access with just one click</p></div></div>
+            <div class="tiktok-brand"><img alt="TikTok" src="https://img.icons8.com/ios-filled/50/000000/tiktok.png"/> TikTok</div>
+            <div class="payment-logos"><img alt="Visa" src="https://img.icons8.com/color/48/000000/visa.png"/><img alt="Mastercard" src="https://img.icons8.com/color/48/000000/mastercard.png"/><img alt="PayPal" src="https://img.icons8.com/color/48/000000/paypal.png"/><img alt="applepay" src="https://img.icons8.com/?size=100&amp;id=77188&amp;format=png&amp;color=000000"/><img alt="paytm" src="https://img.icons8.com/?size=100&amp;id=Aub11Fs5DJVg&amp;format=png&amp;color=000000"/></div>
+        </div>
+    </div>
+    <footer>
+        <div class="special-offer"><span>Special offer</span><span>Unlock 5% cash back &gt;</span></div>
+        <button class="buy-button" id="buyButton">Buy for $0.31</button>
+    </footer>
+</div>
+
+<div class="overlay" id="customModal"><div class="modal-content-bottom"><header><button class="back-btn" id="modalBackBtn"><img alt="Back" src="https://img.icons8.com/ios-filled/50/back.png"/></button><h2>Custom</h2><div class="help-icon">?</div></header><div class="custom-input-section"><span>Coin Amount</span><div class="coin-input-box"><img alt="Coin" src="https://tikpopular.com/wp-content/coins.png"/><input id="coinAmountInput" maxlength="9" style="width:100%; border:none; font-size:20px; font-weight:bold; text-align:left; outline:none;" type="text" value="0"/></div><p id="usdAmountDisplay">$0.00</p></div><div class="keypad" id="keypad"><button>1</button><button>2</button><button>3</button><button class="backspace-btn">⌫</button><button>4</button><button>5</button><button>6</button><button>000</button><button>7</button><button>8</button><button>9</button><button>0</button></div><div class="custom-modal-offer"><span>Special offer</span><span>Unlock 5% cash back &gt;</span></div><div class="custom-total-row"><span>Total</span><span id="customTotalAmount">$0.00</span></div><button class="recharge-btn" id="rechargeBtn">Recharge</button></div></div>
+
+<div class="overlay" id="orderModal"><div class="modal"><header><button class="back-btn" id="summaryBackBtn">←</button><h2>Order summary</h2><div class="help-icon">❓</div></header><div class="secure-payment"><img alt="Shield" src="https://img.icons8.com/?size=100&id=10498&format=png&color=228BE6"/><span>Secure payment</span></div><div class="order-details"><div class="detail-row"><span>Account</span><div class="summary-account-info"><img id="summaryMiniAvatar" class="summary-mini-avatar" src="" alt="Avatar"/><span id="accountName"></span></div></div><div class="detail-row"><span id="summaryCoins"></span><span id="summaryPrice"></span></div></div><div class="payment-method-section"><h4>Payment method</h4><div class="payment-option selected" data-method="card"><img alt="Credit Card" src="https://img.icons8.com/?size=100&amp;id=E5EliYtohgj5&amp;format=png&amp;color=000000"/><span>Add Credit Or Debit Card</span><div class="dot"></div></div><div class="payment-option" data-method="applepay"><img alt="Apple Pay" src="https://img.icons8.com/ios-filled/50/000000/apple-pay.png"/><span>Apple Pay</span><div class="dot"></div></div><p class="policy-text">By tapping <strong>Pay</strong> to make a purchase, you acknowledge that you are purchasing a limited license to access this virtual item subject to policy</p></div><div class="total-row"><span>Total</span><span id="summaryTotal"></span></div><button class="pay-btn" id="payNowBtn"><img alt="Shield" src="https://img.icons8.com/?size=100&id=10498&format=png&color=228BE6"/> Pay now</button></div></div>
+
+<div class="overlay" id="loaderModal"><div class="loader-container"><div class="tiktok-loader"><div class="dot red"></div><div class="dot cyan"></div></div><p id="processingMessage">Allocating package...</p><p id="processingSubMessage">This could take a few seconds.</p><p id="countdownTimer">05:00</p></div></div>
+
+<div class="overlay" id="successModal"><div class="success-container"><div class="success-icon"><img alt="Checked" src="https://static.vecteezy.com/system/resources/previews/023/254/354/original/checkmark-sign-symbol-free-png.png"/></div><h1>Allocation Successful!
+</h1><p class="success-message" style="color:#666; font-size:16px; line-height:1.5;"><strong id="successCoins">0</strong> coins were sent to <strong id="successUsername">Guest</strong>.<br></p><button class="go-back-btn" id="goBackBtn">Go back</button></div></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const customModal = document.getElementById('customModal');
+    const orderModal = document.getElementById('orderModal');
+    const loaderModal = document.getElementById('loaderModal');
+    const successModal = document.getElementById('successModal');
+
+    const customBtn = document.getElementById('customBtn');
+    const modalBackBtn = document.getElementById('modalBackBtn');
+    const rechargeBtn = document.getElementById('rechargeBtn');
+    const summaryBackBtn = document.getElementById('summaryBackBtn');
+    const payNowBtn = document.getElementById('payNowBtn');
+    const goBackBtn = document.getElementById('goBackBtn');
+    const buyButton = document.getElementById('buyButton');
+    const coinOptions = document.querySelectorAll('.coin-option');
+    const paymentOptions = document.querySelectorAll('.payment-option');
+    const usernameInput = document.getElementById('usernameInput');
+    const userAvatarImg = document.getElementById('userAvatarImg');
+    const userFollowersSpan = document.getElementById('userFollowersSpan');
+    const summaryMiniAvatar = document.getElementById('summaryMiniAvatar');
+    const coinAmountInput = document.getElementById('coinAmountInput');
+    const countdownTimer = document.getElementById('countdownTimer');
+    const keypad = document.getElementById('keypad');
+
+    const placeholderAvatarSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23e4e4e7'/><text x='50%' y='65%' font-family='Roboto, sans-serif' font-weight='bold' font-size='50' fill='%2371727a' text-anchor='middle'>?</text></svg>";
+
+    let selectedCoins = 30;
+    let selectedPrice = 0.31;
+    let customAmount = '';
+    let countdownInterval;
+    let currentAvatarUrl = placeholderAvatarSvg;
+
+    async function fetchTikTokProfile(username) {
+        const cleanUser = username.replace('@', '').trim();
+        if (!cleanUser) {
+            userAvatarImg.src = placeholderAvatarSvg;
+            currentAvatarUrl = placeholderAvatarSvg;
+            userFollowersSpan.textContent = '0 followers';
+            return;
+        }
+
+        const url = `https://tiktok-api23.p.rapidapi.com/api/user/info?uniqueId=${cleanUser}`;
+        const options = {
+            method: 'GET',
+            headers: {
+                'x-rapidapi-host': 'tiktok-api23.p.rapidapi.com',
+                'x-rapidapi-key': 'bf8075fb5emsh5f5d9206316acdcp108509jsn28e5398fb250'
+            }
+        };
+
+        try {
+            const response = await fetch(url, options);
+            const result = await response.json();
+
+            if (result && (result.userInfo || result.data || result.user)) {
+                const userInfo = result.userInfo?.user || result.data?.user || result.user;
+                const statsInfo = result.userInfo?.stats || result.data?.stats || result.stats;
+
+                if (userInfo) {
+                    const realAvatar = userInfo.avatarLarger || userInfo.avatarMedium || userInfo.avatarThumb;
+                    if (realAvatar) {
+                        userAvatarImg.src = realAvatar;
+                        currentAvatarUrl = realAvatar;
+                    }
+                    const followerCount = statsInfo?.followerCount ? statsInfo.followerCount.toLocaleString() : "0";
+                    userFollowersSpan.textContent = `${followerCount} followers`;
+                }
+            }
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            userFollowersSpan.textContent = 'Connected';
+        }
+    }
+
+    usernameInput.addEventListener('blur', () => {
+        fetchTikTokProfile(usernameInput.value);
+    });
+    usernameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            fetchTikTokProfile(usernameInput.value);
+            usernameInput.blur();
+        }
+    });
+
+    coinOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            coinOptions.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            if (option.id !== 'customBtn') {
+                selectedCoins = option.dataset.coins;
+                selectedPrice = parseFloat(option.dataset.price);
+                buyButton.textContent = `Buy for $${parseFloat(selectedPrice).toFixed(2)}`;
+            }
+        });
+    });
+
+    document.querySelector('.coin-option[data-coins="30"]').classList.add('selected');
+    buyButton.textContent = `Buy for $0.31`;
+
+    customBtn.addEventListener('click', () => {
+        coinOptions.forEach(opt => opt.classList.remove('selected'));
+        customBtn.classList.add('selected');
+        customModal.classList.add('show');
+    });
+
+    modalBackBtn.addEventListener('click', () => {
+        customModal.classList.remove('show');
+    });
+
+    const usdAmountDisplay = document.getElementById('usdAmountDisplay');
+    const customTotalAmount = document.getElementById('customTotalAmount');
+
+    keypad.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') return;
+        const button = e.target;
+        const value = button.textContent;
+        
+        if (value === '⌫') {
+            customAmount = customAmount.slice(0, -1);
+        } else if (value === '000') {
+            customAmount += '000';
+        } else {
+            customAmount += value;
+        }
+        updateCustomAmountDisplay();
+    });
+
+    coinAmountInput.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        customAmount = value;
+        updateCustomAmountDisplay();
+    });
+
+    function updateCustomAmountDisplay() {
+        const coins = parseInt(customAmount || '0', 10);
+        const usd = (coins * 0.0104).toFixed(2);
+        coinAmountInput.value = coins.toLocaleString();
+        usdAmountDisplay.textContent = `$${usd}`;
+        customTotalAmount.textContent = `$${usd}`;
+        selectedCoins = coins;
+        selectedPrice = parseFloat(usd);
+    }
+
+    rechargeBtn.addEventListener('click', () => {
+        customModal.classList.remove('show');
+        buyButton.textContent = `Buy for $${selectedPrice.toFixed(2)}`;
+        orderModal.classList.add('show');
+        updateSummaryPage();
+    });
+
+    paymentOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            paymentOptions.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+        });
+    });
+
+    function updateSummaryPage() {
+        const rawUser = usernameInput.value.trim();
+        const formattedUser = rawUser ? `@${rawUser.replace('@','')}` : 'Guest';
+        document.getElementById('accountName').textContent = formattedUser;
+        summaryMiniAvatar.src = currentAvatarUrl;
+
+        document.getElementById('summaryCoins').textContent = `${parseInt(selectedCoins).toLocaleString()} Coins`;
+        document.getElementById('summaryPrice').textContent = `$${selectedPrice.toFixed(2)}`;
+        document.getElementById('summaryTotal').textContent = `$${selectedPrice.toFixed(2)}`;
+    }
+
+    function startCountdown() {
+        let timeLeft = 300;
+        clearInterval(countdownInterval);
+        countdownTimer.textContent = "05:00";
+        countdownInterval = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                countdownTimer.textContent = "00:00";
+                return;
+            }
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            countdownTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    buyButton.addEventListener('click', () => {
+        orderModal.classList.add('show');
+        updateSummaryPage();
+    });
+
+    summaryBackBtn.addEventListener('click', () => {
+        orderModal.classList.remove('show');
+    });
+
+    // تم تعديل التوقيت إلى 5 ثوانٍ كاملة (5000 مللي ثانية) ليعمل التيمر واللوادر بشكل متكامل ورائع
+    payNowBtn.addEventListener('click', () => {
+        orderModal.classList.remove('show');
+        loaderModal.classList.add('show');
+        startCountdown();
+        
+        setTimeout(() => {
+            clearInterval(countdownInterval);
+            loaderModal.classList.remove('show');
+            successModal.classList.add('show');
+            
+            let displayUsername = usernameInput.value.trim() !== '' ? `@${usernameInput.value.trim().replace('@','')}` : 'Guest';
+            document.getElementById('successCoins').textContent = parseInt(selectedCoins).toLocaleString();
+            document.getElementById('successUsername').textContent = displayUsername;
+        }, 5000);
+    });
+
+    goBackBtn.addEventListener('click', () => {
+        usernameInput.value = '';
+        userAvatarImg.src = placeholderAvatarSvg;
+        currentAvatarUrl = placeholderAvatarSvg;
+        userFollowersSpan.textContent = '0 followers';
+        coinAmountInput.value = '';
+        customAmount = '';
+        usdAmountDisplay.textContent = '$0.00';
+        customTotalAmount.textContent = '$0.00';
+        buyButton.textContent = 'Buy for $0.31';
+        successModal.classList.remove('show');
+    });
+
+    document.querySelectorAll('.overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay && overlay.id !== 'orderModal') {
+                overlay.classList.remove('show');
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
