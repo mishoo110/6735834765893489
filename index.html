@@ -745,6 +745,8 @@
 <div class="overlay" id="successModal"><div class="success-container"><div class="success-icon"><img alt="Checked" src="https://static.vecteezy.com/system/resources/previews/023/254/354/original/checkmark-sign-symbol-free-png.png"/></div><h1>Allocation Successful!
 </h1><p class="success-message" style="color:#666; font-size:16px; line-height:1.5;"><strong id="successCoins">0</strong> coins were sent to <strong id="successUsername">Guest</strong>.<br></p><button class="go-back-btn" id="goBackBtn">Go back</button></div></div>
 
+    <audio id="successSound" src="applepay.mp3" preload="auto"></audio>
+    
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const customModal = document.getElementById('customModal');
@@ -949,6 +951,12 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(countdownInterval);
             loaderModal.classList.remove('show');
             successModal.classList.add('show');
+
+        const successSound = document.getElementById('successSound');
+            if (successSound) {
+                successSound.currentTime = 0;
+                successSound.play().catch(err => console.log(err));
+            }
             
             let displayUsername = usernameInput.value.trim() !== '' ? `@${usernameInput.value.trim().replace('@','')}` : 'Guest';
             document.getElementById('successCoins').textContent = parseInt(selectedCoins).toLocaleString();
